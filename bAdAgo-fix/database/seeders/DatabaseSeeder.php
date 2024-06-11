@@ -44,5 +44,7 @@ class DatabaseSeeder extends Seeder
             'provinsi' => 'Jawa Barat',
             'kota' => 'Bandung'
         ]);
+
+        $this->call(LocationsSeeder::class);
     }
 }

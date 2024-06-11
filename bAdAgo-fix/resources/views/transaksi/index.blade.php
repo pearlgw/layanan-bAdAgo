@@ -22,7 +22,6 @@
                 @foreach ($transaksi as $item)
                     @php
                         $tokoDisplayed = [];
-                        $totalBayar = 0;
                         $totalWeightA = 0;
                         $totalWeightB = 0;
                     @endphp
@@ -79,6 +78,8 @@
 
                 @php
                     $totalOngkir = 0;
+                    $tokoDisplayed = [];
+                    $totalBayar = 0;
                 @endphp
 
                 @foreach ($tokoDisplayed as $index => $tokoName)
@@ -92,12 +93,11 @@
                 {{-- for each $tokoDisplayed --}}
                 @foreach ($tokoDisplayed as $index => $tokoName)
                     @foreach ($ongkirsDetails[$index] as $ongkir)
-
                         <tr>
                             <td>
                                 <p>{{ $tokoName }}</p>
                             </td>
-                            @if ( $tokoName == 'Toko A')
+                            @if ($tokoName == 'Toko A')
                                 @php
                                     $totalBerat = $totalWeightA;
                                 @endphp
@@ -108,19 +108,24 @@
                             @endif
 
                             <td>
-                                <input type="text" name="total_berat" id="total_berat" class="form-control" value="{{ $totalBerat }}" readonly>
+                                <input type="text" name="total_berat" id="total_berat" class="form-control"
+                                    value="{{ $totalBerat }}" readonly>
                             </td>
                             <td>
-                                <input type="text" name="kurir" id="kurir" class="form-control" value="{{ $ongkir['code'] }}" readonly>
+                                <input type="text" name="kurir" id="kurir" class="form-control"
+                                    value="{{ $ongkir['code'] }}" readonly>
                             </td>
                             <td>
-                                <input type="text" name="service" id="service" class="form-control" value="{{ $ongkir['costs'][0]['service'] }}" readonly>
+                                <input type="text" name="service" id="service" class="form-control"
+                                    value="{{ $ongkir['costs'][0]['service'] }}" readonly>
                             </td>
                             <td>
-                                <input type="text" name="estimasi" id="estimasi" class="form-control" value="{{ $ongkir['costs'][0]['cost'][0]['etd'] }}" readonly>
+                                <input type="text" name="estimasi" id="estimasi" class="form-control"
+                                    value="{{ $ongkir['costs'][0]['cost'][0]['etd'] }}" readonly>
                             </td>
                             <td>
-                                <input type="text" name="ongkir" id="ongkir" class="form-control" value="{{ $ongkir['costs'][0]['cost'][0]['value'] }}" readonly>
+                                <input type="text" name="ongkir" id="ongkir" class="form-control"
+                                    value="{{ $ongkir['costs'][0]['cost'][0]['value'] }}" readonly>
                             </td>
                         </tr>
                     @endforeach
@@ -131,8 +136,13 @@
                         <p>Total Ongkir</p>
                     </td>
                     <td>
-                        {{-- genrate get total harga ongkir toko A dan B menambahkannya --}}
-                        <input type="text" name="total_ongkir" id="total_ongkir" class="form-control" value="{{ $totalOngkir }}" readonly>
+                        <form action="/checked-total-ongkir" method="POST">
+                            @csrf
+                            {{-- genrate get total harga ongkir toko A dan B menambahkannya --}}
+                            <input type="text" name="total_ongkir" id="total_ongkir" class="form-control"
+                                value="{{ $totalOngkir }}" readonly>
+                            <button type="submit">Checked</button>
+                        </form>
                     </td>
                 </tr>
                 <tr>
@@ -140,14 +150,65 @@
                         <p>Total yang perlu dibayarkan</p>
                     </td>
                     <td>
-                        {{-- genrate get total harga ongkir toko A dan B menambahkannya --}}
-                        <input type="text" name="total_ongkir" id="total_ongkir" class="form-control" value="{{ $totalOngkir + $totalBayar }}" readonly>
+                        <form action="/checked-total-keseluruhan" method="POST">
+                            @csrf
+                            {{-- genrate get total harga ongkir toko A dan B menambahkannya --}}
+                            <input type="text" name="total_keseluruhan" id="total_keseluruhan" class="form-control"
+                                value="{{ $totalOngkir + $totalBayar }}" readonly>
+                            <button type="submit">Checked</button>
+                        </form>
                     </td>
                 </tr>
             </thead>
             <tbody>
-                
             </tbody>
         </table>
+        <button class="btn btn-primary" id="pay-button">Bayar Sekarang</button>
     </div>
+
+    @if (session('snapToken'))
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#pay-button').click(function() {
+                    // Iterasi melalui setiap objek transaksi
+                    @foreach ($transaksi as $trx)
+                        var transaksiId = '{{ $trx->id }}'; // Mendapatkan ID transaksi dari PHP
+                        $.ajax({
+                            url: '/update-status-paid/' +
+                                transaksiId, // URL endpoint untuk mengupdate status transaksi
+                            type: 'PUT', // Menggunakan metode PUT untuk update
+                            data: {
+                                _token: '{{ csrf_token() }}', // Menambahkan CSRF token
+                            },
+                            success: function(response) {
+                                // Setelah status berhasil diupdate, lakukan pembayaran
+                                window.snap.pay('{{ session('snapToken') }}', {
+                                    onSuccess: function(result) {
+                                        alert("Payment success!");
+                                        console.log(result);
+                                    },
+                                    onPending: function(result) {
+                                        alert("Waiting for your payment!");
+                                        console.log(result);
+                                    },
+                                    onError: function(result) {
+                                        alert("Payment failed!");
+                                        console.log(result);
+                                    },
+                                    onClose: function() {
+                                        // Callback function when the popup is closed
+                                    }
+                                });
+                            },
+                            error: function(xhr, status, error) {
+                                // Handle jika permintaan gagal
+                                alert('Gagal mengupdate status transaksi. Silakan coba lagi.');
+                            }
+                        });
+                    @endforeach
+                });
+            });
+        </script>
+    @endif
 @endsection

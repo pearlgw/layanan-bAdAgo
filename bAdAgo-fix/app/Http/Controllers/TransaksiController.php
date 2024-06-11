@@ -196,8 +196,68 @@ class TransaksiController extends Controller
             // Menyimpan data tokoData ke transaksi
             // $item->tokoData = $tokoData;
         }
-        
+
 
         return view('transaksi.index', compact('transaksi', 'ongkirsDetails'));
+    }
+
+    public function checkedTotalKeseluruhan(Request $request)
+    {
+        $totalKeseluruhan = Transaksi::where('status', 'unpaid')->first();
+
+        $totalKeseluruhan->update([
+            'total_keseluruhan' => $request->total_keseluruhan,
+        ]);
+
+        // Set konfigurasi Midtrans
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = false;
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
+
+        // Parameter untuk Snap API
+        $params = [
+            'transaction_details' => [
+                'order_id' => $totalKeseluruhan->kode_transaksi,
+                'gross_amount' => $totalKeseluruhan->total_keseluruhan,
+            ],
+            'customer_details' => [
+                'first_name' => $totalKeseluruhan->user->name,
+                'last_name' => '',
+                'phone' => $totalKeseluruhan->user->no_telp,
+            ],
+        ];
+
+        // Mendapatkan Snap Token
+        $snapToken = \Midtrans\Snap::getSnapToken($params);
+        // dd($snapToken);
+
+        return redirect('/checkout')->with([
+            'snapToken' => $snapToken,
+            'transaksi' => $totalKeseluruhan,
+        ]);
+    }
+
+    public function checkedTotalOngkir(Request $request)
+    {
+        $totalOngkir = Transaksi::where('status', 'unpaid')->first();
+
+        $totalOngkir->update([
+            'total_ongkir' => $request->total_ongkir
+        ]);
+
+        return redirect('/checkout');
+    }
+
+    public function updateStatusPaid($transaksiId)
+    {
+        // Temukan transaksi berdasarkan ID
+        $transaksi = Transaksi::findOrFail($transaksiId);
+
+        // Update status transaksi menjadi "paid"
+        $transaksi->status = 'paid';
+        $transaksi->save();
+
+        return response()->json(['message' => 'Status transaksi berhasil diupdate.'], 200);
     }
 }
