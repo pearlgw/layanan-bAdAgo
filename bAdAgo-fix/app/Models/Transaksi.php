@@ -10,4 +10,13 @@ class Transaksi extends Model
     use HasFactory;
     protected $guarded = ['id'];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function detailTransaksi()
+    {
+        return $this->hasMany(DetailTransaksi::class);
+    }
 }

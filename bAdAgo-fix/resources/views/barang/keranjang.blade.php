@@ -12,8 +12,11 @@
                     <th scope="col">#</th>
                     <th scope="col">Kode Barang</th>
                     <th scope="col">Nama Barang</th>
+                    <th scope="col">Berat (Gram)</th>
                     <th scope="col">Stok</th>
                     <th scope="col">Toko</th>
+                    <th scope="col">Provinsi Asal</th>
+                    <th scope="col">Kota Asal</th>
                     <th scope="col">Harga</th>
                     <th scope="col">Aksi</th>
                     <th scope="col">Jumlah Pembelian</th>
@@ -24,11 +27,15 @@
                 @foreach ($barangDetails as $index => $barang)
                     <tr>
                         <input type="hidden" name="barang_id[]" value="{{ $barang['id'] }}">
+                        <input type="hidden" name="weight[]" value="{{ $barang['weight'] }}">
                         <th>{{ $loop->iteration }}</th>
                         <td>{{ $barang['kode_barang'] }}</td>
                         <td>{{ $barang['nama_barang'] }}</td>
+                        <td>{{ $barang['weight'] }}</td>
                         <td>{{ $barang['stok'] }}</td>
                         <td>{{ $barang['nama_toko'] }}</td>
+                        <td>{{ $barang['provinsi'] }}</td>
+                        <td>{{ $barang['kota'] }}</td>
                         <td>{{ $barang['harga_jual'] }}</td>
                         <td>
                             <a href="#" onclick="hapusBarang('{{ $barang['id'] }}'); return false;">Hapus</a>

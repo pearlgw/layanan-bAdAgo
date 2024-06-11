@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('kode_transaksi');
             $table->integer('total_transaksi');
+            $table->integer('total_ongkir');
+            $table->integer('total_keseluruhan')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->string('status')->default('unpaid');
             $table->timestamps();

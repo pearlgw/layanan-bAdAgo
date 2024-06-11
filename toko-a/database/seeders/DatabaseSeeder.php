@@ -22,12 +22,18 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
+        $kota = 'Jakarta Pusat';
+        $provinsi = 'DKI Jakarta';
+
         for($i = 1; $i <= 11; $i++){
             Barang::create([
                 'id' => Uuid::uuid4()->toString(),
                 'kode_barang' => "BRG000{$i}",
                 'nama_barang' => "Barang {$i}",
+                'kota' => $kota,
+                'provinsi' => $provinsi,
                 'stok' => mt_rand(10, 20),
+                'weight' => mt_rand(100, 10000),
                 'harga_jual' => mt_rand(2000, 2000000),
             ]);
         }

@@ -10,4 +10,8 @@ class DetailTransaksi extends Model
     use HasFactory;
     protected $guarded = ['id'];
 
+    public function transaksi()
+    {
+        return $this->belongsTo(Transaksi::class, 'transaksi_id');
+    }
 }

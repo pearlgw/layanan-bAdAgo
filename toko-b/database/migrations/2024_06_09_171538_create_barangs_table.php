@@ -15,7 +15,10 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('kode_barang');
             $table->string('nama_barang');
+            $table->string('kota');
+            $table->string('provinsi');
             $table->integer('stok');
+            $table->integer('weight')->default(0);
             $table->string('nama_toko')->default('Toko B');
             $table->integer('harga_jual');
             $table->timestamps();
