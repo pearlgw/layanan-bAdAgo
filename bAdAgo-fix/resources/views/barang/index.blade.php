@@ -10,6 +10,7 @@
             </form>
 
             <a href="/keranjang">Lihat Keranjang</a>
+            <a href="/checkout">Lihat Checkout</a>
         @endif
 
         <h1>Kumpulan Barang</h1>

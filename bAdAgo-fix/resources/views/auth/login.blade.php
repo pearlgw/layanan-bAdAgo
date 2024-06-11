@@ -39,6 +39,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">Submit</button>
+                    <a href="/register">Register</a>
                 </form>
             </div>
         </div>

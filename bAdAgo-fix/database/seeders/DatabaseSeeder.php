@@ -31,14 +31,17 @@ class DatabaseSeeder extends Seeder
             'name' => 'gayuh',
             'email' => 'gayuh@gmail.com',
             'password' => Hash::make('password'),
-            'role_id' => 1
+            'no_telp' => '089738383939',
+            'provinsi' => 'Jawa Tengah',
+            'kota' => 'Semarang'
         ]);
         User::create([
             'name' => 'hasan',
             'email' => 'hasan@gmail.com',
             'password' => Hash::make('password'),
-            'role_id' => 1
+            'no_telp' => '089738383939',
+            'provinsi' => 'Jawa Barat',
+            'kota' => 'Bandung'
         ]);
     }
-
 }

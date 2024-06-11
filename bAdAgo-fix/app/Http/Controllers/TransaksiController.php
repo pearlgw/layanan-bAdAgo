@@ -54,7 +54,7 @@ class TransaksiController extends Controller
         Keranjang::where('user_id', $userId)->whereIn('barang_id', $request->barang_id)->delete();
 
         // Redirect ke halaman sukses atau halaman yang diinginkan
-        return redirect('/keranjang');
+        return redirect('/checkout');
     }
 
     private function updateStock(Client $client, $barangId, $data)
@@ -102,5 +102,60 @@ class TransaksiController extends Controller
         Keranjang::where('user_id', Auth::id())->where('barang_id', $id)->delete();
 
         return redirect('/keranjang');
+    }
+
+    public function showTransaksi()
+    {
+        $transaksi = Transaksi::where('user_id', Auth::id())
+            ->where('status', 'unpaid')
+            ->with('detailTransaksi')
+            ->get();
+
+        $client = new Client();
+
+        // Fungsi untuk mengambil detail barang dari API
+        function fetchBarangDetails($client, $url)
+        {
+            try {
+                $response = $client->request('GET', $url);
+                $content = $response->getBody()->getContents();
+                $contentArray = json_decode($content, true);
+
+                if (isset($contentArray['data'])) {
+                    return $contentArray['data'];
+                }
+            } catch (\Exception $e) {
+                Log::error("Error fetching data from {$url}: " . $e->getMessage());
+            }
+            return null;
+        }
+
+        foreach ($transaksi as $item) {
+            $tokoData = [];
+
+            foreach ($item->detailTransaksi as $detail) {
+                // Mengambil data barang dari API toko A
+                $urlA = "http://127.0.0.1:8001/api/barang/{$detail->barang_id}";
+                $dataA = fetchBarangDetails($client, $urlA);
+
+                // Mengambil data barang dari API toko B
+                $urlB = "http://127.0.0.1:8002/api/barang/{$detail->barang_id}";
+                $dataB = fetchBarangDetails($client, $urlB);
+
+                // Memprioritaskan data barang dari API toko A jika ada, jika tidak, menggunakan data barang dari API toko B
+                if ($dataA) {
+                    $detail->nama_barang = $dataA['nama_barang'];
+                } elseif ($dataB) {
+                    $detail->nama_barang = $dataB['nama_barang'];
+                } else {
+                    $detail->nama_barang = 'Barang tidak ditemukan';
+                }
+            }
+
+            // Menyimpan data tokoData ke transaksi
+            // $item->tokoData = $tokoData;
+        }
+
+        return view('transaksi.index', compact('transaksi'));
     }
 }
