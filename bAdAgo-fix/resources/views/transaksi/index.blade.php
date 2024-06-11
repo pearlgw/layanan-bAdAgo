@@ -23,6 +23,8 @@
                     @php
                         $tokoDisplayed = [];
                         $totalBayar = 0;
+                        $totalWeightA = 0;
+                        $totalWeightB = 0;
                     @endphp
                     @foreach ($item->detailTransaksi as $index => $detail)
                         <tr>
@@ -42,6 +44,8 @@
                             <td>{{ $detail->total_per_item }}</td>
                             @php
                                 $totalBayar += $detail->total_per_item;
+                                $totalWeightA += $detail->weight;
+                                $totalWeightB += $detail->weight * $detail->qty;
                             @endphp
                         </tr>
                     @endforeach
@@ -93,8 +97,18 @@
                             <td>
                                 <p>{{ $tokoName }}</p>
                             </td>
+                            @if ( $tokoName == 'Toko A')
+                                @php
+                                    $totalBerat = $totalWeightA;
+                                @endphp
+                            @else
+                                @php
+                                    $totalBerat = $totalWeightB;
+                                @endphp
+                            @endif
+
                             <td>
-                                <input type="text" name="total_berat" id="total_berat" class="form-control" value="100" readonly>
+                                <input type="text" name="total_berat" id="total_berat" class="form-control" value="{{ $totalBerat }}" readonly>
                             </td>
                             <td>
                                 <input type="text" name="kurir" id="kurir" class="form-control" value="{{ $ongkir['code'] }}" readonly>
