@@ -22,6 +22,7 @@
                 @foreach ($transaksi as $item)
                     @php
                         $tokoDisplayed = [];
+                        $totalBayar = 0;
                     @endphp
                     @foreach ($item->detailTransaksi as $index => $detail)
                         <tr>
@@ -36,12 +37,102 @@
                                 </td>
                             @endif
                             <td>{{ $detail->nama_barang }}</td>
-                            <td>{{ $detail->weight }} kg</td>
+                            <td>{{ $detail->weight }} gram</td>
                             <td>{{ $detail->qty }}</td>
                             <td>{{ $detail->total_per_item }}</td>
+                            @php
+                                $totalBayar += $detail->total_per_item;
+                            @endphp
                         </tr>
                     @endforeach
                 @endforeach
+            </tbody>
+        </table>
+
+        <h3>Detail Ongkir</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Nama Toko</th>
+                    <th scope="col">Total Berat</th>
+                    <th scope="col">Kurir</th>
+                    <th scope="col">Service</th>
+                    <th scope="col">Estimasi</th>
+                    <th scope="col">Ongkir</th>
+                </tr>
+
+                {{-- get unique $detail->toko --}}
+                @foreach ($transaksi as $item)
+                    @foreach ($item->detailTransaksi as $index => $detail)
+                        @if (!in_array($detail->toko, $tokoDisplayed))
+                            @php
+                                $tokoDisplayed[] = $detail->toko;
+                                $totalBerat = $detail->weight * $detail->qty;
+                            @endphp
+                        @endif
+                    @endforeach
+                @endforeach
+
+                @php
+                    $totalOngkir = 0;
+                @endphp
+
+                @foreach ($tokoDisplayed as $index => $tokoName)
+                    @foreach ($ongkirsDetails[$index] as $ongkir)
+                        @php
+                            $totalOngkir += $ongkir['costs'][0]['cost'][0]['value'];
+                        @endphp
+                    @endforeach
+                @endforeach
+
+                {{-- for each $tokoDisplayed --}}
+                @foreach ($tokoDisplayed as $index => $tokoName)
+                    @foreach ($ongkirsDetails[$index] as $ongkir)
+
+                        <tr>
+                            <td>
+                                <p>{{ $tokoName }}</p>
+                            </td>
+                            <td>
+                                <input type="text" name="total_berat" id="total_berat" class="form-control" value="100" readonly>
+                            </td>
+                            <td>
+                                <input type="text" name="kurir" id="kurir" class="form-control" value="{{ $ongkir['code'] }}" readonly>
+                            </td>
+                            <td>
+                                <input type="text" name="service" id="service" class="form-control" value="{{ $ongkir['costs'][0]['service'] }}" readonly>
+                            </td>
+                            <td>
+                                <input type="text" name="estimasi" id="estimasi" class="form-control" value="{{ $ongkir['costs'][0]['cost'][0]['etd'] }}" readonly>
+                            </td>
+                            <td>
+                                <input type="text" name="ongkir" id="ongkir" class="form-control" value="{{ $ongkir['costs'][0]['cost'][0]['value'] }}" readonly>
+                            </td>
+                        </tr>
+                    @endforeach
+                @endforeach
+
+                <tr>
+                    <td colspan="5">
+                        <p>Total Ongkir</p>
+                    </td>
+                    <td>
+                        {{-- genrate get total harga ongkir toko A dan B menambahkannya --}}
+                        <input type="text" name="total_ongkir" id="total_ongkir" class="form-control" value="{{ $totalOngkir }}" readonly>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <p>Total yang perlu dibayarkan</p>
+                    </td>
+                    <td>
+                        {{-- genrate get total harga ongkir toko A dan B menambahkannya --}}
+                        <input type="text" name="total_ongkir" id="total_ongkir" class="form-control" value="{{ $totalOngkir + $totalBayar }}" readonly>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                
             </tbody>
         </table>
     </div>

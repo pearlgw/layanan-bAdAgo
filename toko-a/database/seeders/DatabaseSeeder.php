@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
                 'kota' => $kota,
                 'provinsi' => $provinsi,
                 'stok' => mt_rand(10, 20),
+                'weight' => mt_rand(100, 10000),
                 'harga_jual' => mt_rand(2000, 2000000),
             ]);
         }

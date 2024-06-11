@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('kota');
             $table->string('provinsi');
             $table->integer('stok');
+            $table->integer('weight')->default(0);
             $table->string('nama_toko')->default('Toko A');
             $table->integer('harga_jual');
             $table->timestamps();

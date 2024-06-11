@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\City;
 use App\Models\DetailTransaksi;
 use App\Models\Keranjang;
 use App\Models\Transaksi;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Kavist\RajaOngkir\Facades\RajaOngkir;
 
 class TransaksiController extends Controller
 {
@@ -26,6 +28,7 @@ class TransaksiController extends Controller
         $transaksi = Transaksi::create([
             'kode_transaksi' => $kodeTransaksi,
             'user_id' => $userId,
+            'total_ongkir' => 0,
             'total_transaksi' => $request->total_transaksi,
         ]);
 
@@ -110,6 +113,7 @@ class TransaksiController extends Controller
             ->where('status', 'unpaid')
             ->with('detailTransaksi')
             ->get();
+        // dd($transaksi);
 
         $client = new Client();
 
@@ -130,6 +134,12 @@ class TransaksiController extends Controller
             return null;
         }
 
+        $total_weight_A = 0;
+        $total_weight_B = 0;
+        $destinationA = null;
+        $destinationB = null;
+        $ongkirsDetails = [];
+
         foreach ($transaksi as $item) {
             $tokoData = [];
 
@@ -145,17 +155,49 @@ class TransaksiController extends Controller
                 // Memprioritaskan data barang dari API toko A jika ada, jika tidak, menggunakan data barang dari API toko B
                 if ($dataA) {
                     $detail->nama_barang = $dataA['nama_barang'];
+                    $detail->weight = $dataA['weight'];
+                    $detail->toko = 'Toko A';
+
+                    $total_weight_A += $dataA['weight'];
+                    $detail->total_weight_A = $total_weight_A;
+
+                    $destinationA = City::where('name', $dataA['kota'])->first()->city_id;
                 } elseif ($dataB) {
                     $detail->nama_barang = $dataB['nama_barang'];
+                    $detail->weight = $dataB['weight'];
+                    $detail->toko = 'Toko B';
+
+                    $total_weight_B += $dataB['weight'];
+                    $detail->total_weight_B = $total_weight_B;
+
+                    $destinationB = City::where('name', $dataB['kota'])->first()->city_id;
                 } else {
                     $detail->nama_barang = 'Barang tidak ditemukan';
                 }
             }
 
+            $costA = RajaOngkir::ongkosKirim([
+                'origin'        => $destinationA, // ID kota/kabupaten asal
+                'destination'   => City::where('name', auth()->user()->kota)->first()->city_id, // ID kota/kabupaten tujuan
+                'weight'        => $total_weight_A, // berat barang dalam gram
+                'courier'       => 'jne' // kode kurir pengiriman: ['jne', 'tiki', 'pos'] untuk starter
+            ])->get();
+
+            $costB = RajaOngkir::ongkosKirim([
+                'origin'        => $destinationB, // ID kota/kabupaten asal
+                'destination'   => City::where('name', auth()->user()->kota)->first()->city_id, // ID kota/kabupaten tujuan
+                'weight'        => $total_weight_B, // berat barang dalam gram
+                'courier'       => 'jne' // kode kurir pengiriman: ['jne', 'tiki', 'pos'] untuk starter
+            ])->get();
+
+            $ongkirsDetails[] = $costA;
+            $ongkirsDetails[] = $costB;
+
             // Menyimpan data tokoData ke transaksi
             // $item->tokoData = $tokoData;
         }
+        
 
-        return view('transaksi.index', compact('transaksi'));
+        return view('transaksi.index', compact('transaksi', 'ongkirsDetails'));
     }
 }
