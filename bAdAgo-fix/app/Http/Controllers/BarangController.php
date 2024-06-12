@@ -90,7 +90,7 @@ class BarangController extends Controller
             fetchBarangDetails($client, $url, $barangDetails, 'Toko B');
         }
 
-        
+
         // get kota from barangDetails
         foreach ($barangDetails as $barang => $value) {
             $kota_asal_id = City::where('name', $value['kota'])->first()->city_id;

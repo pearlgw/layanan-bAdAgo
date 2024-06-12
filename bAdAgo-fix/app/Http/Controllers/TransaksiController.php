@@ -142,8 +142,9 @@ class TransaksiController extends Controller
 
         function fetchOngkir($origin, $destination, $total_weight)
         {
+            // dd($total_weight);
             $client = new Client();
-            $apiKey = 'f37fcf9995ed4297fdb56ddec96d2de9';
+            $apiKey = 'd2beef391763b72ff52f5b413ac0e744';
 
             $response = $client->post('https://api.rajaongkir.com/starter/cost', [
                 'headers' => [

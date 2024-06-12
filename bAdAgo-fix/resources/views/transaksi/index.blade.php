@@ -1,7 +1,114 @@
 @extends('layouts.main')
 
 @section('contents')
-    <h1>Halaman Checkout</h1>
+
+
+
+
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th scope="col" class="px-6 py-3">
+                    No
+                </th>
+                <th scope="col" class=" py-3">
+                    Kode Transakasi
+                </th>
+                <th scope="col" class=" py-3">
+                    Total Transaksi
+                </th>
+                <th scope="col" class=" py-3">
+                    Nama
+                </th>
+                <th scope="col" class=" py-3">
+                    Provinsi
+                </th>
+                <th scope="col" class=" py-3">
+                    Kota
+                </th>
+                <th scope="col" class=" py-3">
+                    Barang
+                </th>
+                <th scope="col" class=" py-3">
+                    Berat
+                </th>
+                <th scope="col" class=" py-3">
+                    Jumlah
+                </th>
+                <th scope="col" class=" py-3">
+                    Total/Item
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($transaksi as $item)
+                @php
+                    $tokoDisplayed = [];
+                    $totalWeightA = 0;
+                    $totalWeightB = 0;
+                    $totalBayar = 0;
+                @endphp
+                @foreach ($item->detailTransaksi as $index => $detail)
+                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+
+                    @if ($index == 0)
+
+                        <th rowspan="{{ $item->detailTransaksi->count() }}" scope="row" class="px-4 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            {{ $loop->iteration }}
+
+                        </th>
+                        <td rowspan="{{ $item->detailTransaksi->count() }}" class=" py-4">
+                            {{ $item->kode_transaksi }}
+                        </td>
+                        <td rowspan="{{ $item->detailTransaksi->count() }}" class=" py-4">
+                            {{ $item->total_transaksi }}
+                        </td>
+                        <td rowspan="{{ $item->detailTransaksi->count() }}" class=" py-4">
+                            {{ $item->user->name }}
+                        </td>
+                        <td rowspan="{{ $item->detailTransaksi->count() }}" class=" py-4">
+                            {{ auth()->user()->provinsi }}
+                        </td>
+                        <td rowspan="{{ $item->detailTransaksi->count() }}" class=" py-4">
+                            {{ auth()->user()->kota }}
+                        </td>
+                    @endif
+                    <td  class=" py-4">
+                        {{ $detail->nama_barang }}
+                    </td>
+                    <td  class=" py-4">
+                        {{ $detail->weight }} gram
+                    </td>
+                    <td  class=" py-4">
+                        {{ $detail->qty }}
+                    </td>
+                    <td  class=" py-4">
+                        {{ $detail->total_per_item }}
+                    </td>
+                    @php
+                        $totalBayar += $detail->total_per_item;
+                        $totalWeightA += $detail->weight;
+                        $totalWeightB += $detail->weight * $detail->qty;
+                    @endphp
+
+
+                </tr>
+                @endforeach
+
+
+            @endforeach
+
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+    {{-- <h1>Halaman Checkout</h1>
     <div class="container-fluid">
         <table class="table table-bordered">
             <thead>
@@ -51,7 +158,7 @@
                     @endforeach
                 @endforeach
             </tbody>
-        </table>
+        </table> --}}
 
         <h3>Detail Ongkir</h3>
         <table class="table table-bordered">
