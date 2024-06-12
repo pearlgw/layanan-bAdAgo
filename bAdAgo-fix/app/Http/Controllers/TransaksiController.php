@@ -140,6 +140,30 @@ class TransaksiController extends Controller
         $destinationB = null;
         $ongkirsDetails = [];
 
+        function fetchOngkir($origin, $destination, $total_weight)
+        {
+            $client = new Client();
+            $apiKey = 'f37fcf9995ed4297fdb56ddec96d2de9';
+
+            $response = $client->post('https://api.rajaongkir.com/starter/cost', [
+                'headers' => [
+                    'key' => $apiKey,
+                    'content-type' => 'application/x-www-form-urlencoded',
+                ],
+                'form_params' => [
+                    'origin' => $origin,          // Replace with actual origin ID
+                    'destination' => $destination,     // Replace with actual destination ID
+                    'weight' => $total_weight,           // Replace with actual weight
+                    'courier' => 'jne',
+                ],
+            ]);
+
+            $body = $response->getBody();
+            $data = json_decode($body, true);
+            // Handle the response data as needed
+            return $data;
+        }
+
         foreach ($transaksi as $item) {
             $tokoData = [];
 
@@ -176,19 +200,22 @@ class TransaksiController extends Controller
                 }
             }
 
-            $costA = RajaOngkir::ongkosKirim([
-                'origin'        => $destinationA, // ID kota/kabupaten asal
-                'destination'   => City::where('name', auth()->user()->kota)->first()->city_id, // ID kota/kabupaten tujuan
-                'weight'        => $total_weight_A, // berat barang dalam gram
-                'courier'       => 'jne' // kode kurir pengiriman: ['jne', 'tiki', 'pos'] untuk starter
-            ])->get();
+            $costA = fetchOngkir($destinationA, City::where('name', auth()->user()->kota)->first()->city_id, $total_weight_A);
+            $costB = fetchOngkir($destinationB, City::where('name', auth()->user()->kota)->first()->city_id, $total_weight_B);
 
-            $costB = RajaOngkir::ongkosKirim([
-                'origin'        => $destinationB, // ID kota/kabupaten asal
-                'destination'   => City::where('name', auth()->user()->kota)->first()->city_id, // ID kota/kabupaten tujuan
-                'weight'        => $total_weight_B, // berat barang dalam gram
-                'courier'       => 'jne' // kode kurir pengiriman: ['jne', 'tiki', 'pos'] untuk starter
-            ])->get();
+            // $costA = RajaOngkir::ongkosKirim([
+            //     'origin'        => $destinationA, // ID kota/kabupaten asal
+            //     'destination'   => City::where('name', auth()->user()->kota)->first()->city_id, // ID kota/kabupaten tujuan
+            //     'weight'        => $total_weight_A, // berat barang dalam gram
+            //     'courier'       => 'jne' // kode kurir pengiriman: ['jne', 'tiki', 'pos'] untuk starter
+            // ])->get();
+
+            // $costB = RajaOngkir::ongkosKirim([
+            //     'origin'        => $destinationB, // ID kota/kabupaten asal
+            //     'destination'   => City::where('name', auth()->user()->kota)->first()->city_id, // ID kota/kabupaten tujuan
+            //     'weight'        => $total_weight_B, // berat barang dalam gram
+            //     'courier'       => 'jne' // kode kurir pengiriman: ['jne', 'tiki', 'pos'] untuk starter
+            // ])->get();
 
             $ongkirsDetails[] = $costA;
             $ongkirsDetails[] = $costB;

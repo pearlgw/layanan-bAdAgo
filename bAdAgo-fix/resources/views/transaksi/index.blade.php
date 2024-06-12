@@ -24,6 +24,7 @@
                         $tokoDisplayed = [];
                         $totalWeightA = 0;
                         $totalWeightB = 0;
+                        $totalBayar = 0;
                     @endphp
                     @foreach ($item->detailTransaksi as $index => $detail)
                         <tr>
