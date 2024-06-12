@@ -49,7 +49,7 @@ class BarangController extends Controller
         $keranjang->user_id = auth()->user()->id;
         $keranjang->save();
 
-        return redirect('/barang');
+        return redirect('/keranjang');
     }
 
     public function showAll()

@@ -1,8 +1,6 @@
 @extends('layouts.main')
 
 @section('contents')
-    Halaman Keranjang
-    <a href="/barang">Kembali</a>
 
     <form action="/checkout" method="POST" class="d-inline">
         @csrf
