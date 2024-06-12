@@ -160,6 +160,145 @@
             </tbody>
         </table> --}}
 
+
+<div class="mt-10">
+<span class="font-bold text-2xl">Detail Ongkir</span>
+
+</div>
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-2">
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th scope="col" class="px-6 py-3">
+                    Toko
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Total Berat
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Kurir
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Service
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Estimasi
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Ongkir
+                </th>
+            </tr>
+        </thead>
+        {{-- get unique $detail->toko --}}
+        @foreach ($transaksi as $item)
+        @foreach ($item->detailTransaksi as $index => $detail)
+                @if (!in_array($detail->toko, $tokoDisplayed))
+                    @php
+                        $tokoDisplayed[] = $detail->toko;
+                        $totalBerat = $detail->weight * $detail->qty;
+                    @endphp
+                @endif
+            @endforeach
+        @endforeach
+
+        @php
+            $totalOngkir = 0;
+        @endphp
+
+        @foreach ($tokoDisplayed as $index => $tokoName)
+            @foreach ($ongkirsDetails[$index] as $ongkir)
+                @php
+                    $totalOngkir += $ongkir['results'][0]['costs'][0]['cost'][0]['value'];
+                @endphp
+            @endforeach
+        @endforeach
+
+        <tbody>
+            {{-- for each $tokoDisplayed --}}
+            @foreach ($tokoDisplayed as $index => $tokoName)
+                @foreach ($ongkirsDetails[$index] as $ongkir)
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900">
+                            {{ $tokoName }}
+                        </th>
+                        @if ($tokoName == 'Toko A')
+                                @php
+                                    $totalBerat = $totalWeightA;
+                                @endphp
+                        @else
+                                @php
+                                    $totalBerat = $totalWeightB;
+                                @endphp
+                        @endif
+                        <td class="px-6 py-4">
+                            {{ $totalBerat }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $ongkir['results'][0]['name'] }}
+                        </td>
+                        <td class="px-6 py-4">
+                         {{ $ongkir['results'][0]['costs'][0]['service'] }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $ongkir['results'][0]['costs'][0]['cost'][0]['etd'] }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $ongkir['results'][0]['costs'][0]['cost'][0]['value'] }}
+                        </td>
+                    </tr>
+                @endforeach
+            @endforeach
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <td class="px-6 py-4" colspan="5">
+                    <span class="font-medium text-gray-900 text-xl">Total Ongkir</span>
+                </td>
+                <td class="px-6 py-4" >
+                    <form action="/checked-total-ongkir" method="POST">
+                        @csrf
+                        {{-- genrate get total harga ongkir toko A dan B menambahkannya --}}
+                        <input type="text" name="total_ongkir" id="total_ongkir" class="form-control"
+                            value="{{ $totalOngkir }}" readonly>
+                            <button type="submit" class="mt-2 text-blue-700 border border-blue-700 hover:bg-blue-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+                                <svg class="w-6 h-6 text-blue-500 dark:text-white hover:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z"/>
+                                  </svg>
+
+
+                                <span class="sr-only">Checked</span>
+                            </button>
+                    </form>
+                </td>
+            </tr>
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <td class="px-6 py-4" colspan="5">
+                    <span class="font-medium text-gray-900 text-xl">Total Pembayaran</span>
+                </td>
+                <td class="px-6 py-4" >
+                    <form action="/checked-total-keseluruhan" method="POST">
+                        @csrf
+                        {{-- genrate get total harga ongkir toko A dan B menambahkannya --}}
+                        <input type="text" name="total_keseluruhan" id="total_keseluruhan" class="form-control"
+                            value="{{ $totalOngkir + $totalBayar }}" readonly>
+                            <button type="submit" class="mt-2 text-blue-500 border border-blue-700 hover:bg-blue-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+                                <svg class="w-6 h-6 text-blue-500 dark:text-white hover:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z"/>
+                                  </svg>
+
+
+                                <span class="sr-only">Checked</span>
+                            </button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{{-- <button class="btn btn-primary mt-4" id="pay-button">Bayar Sekarang</button> --}}
+<button  id="pay-button" class="mt-4 text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Bayar Sekarang</button>
+
+
+
+    {{-- <div>
         <h3>Detail Ongkir</h3>
         <table class="table table-bordered">
             <thead>
@@ -170,10 +309,10 @@
                     <th scope="col">Service</th>
                     <th scope="col">Estimasi</th>
                     <th scope="col">Ongkir</th>
-                </tr>
+                </tr> --}}
 
                 {{-- get unique $detail->toko --}}
-                @foreach ($transaksi as $item)
+                {{-- @foreach ($transaksi as $item)
                     @foreach ($item->detailTransaksi as $index => $detail)
                         @if (!in_array($detail->toko, $tokoDisplayed))
                             @php
@@ -182,9 +321,9 @@
                             @endphp
                         @endif
                     @endforeach
-                @endforeach
+                @endforeach --}}
 
-                @php
+                {{-- @php
                     $totalOngkir = 0;
                 @endphp
 
@@ -194,13 +333,13 @@
                             $totalOngkir += $ongkir['results'][0]['costs'][0]['cost'][0]['value'];
                         @endphp
                     @endforeach
-                @endforeach
+                @endforeach --}}
 
                     {{-- for each $tokoDisplayed --}}
-                @foreach ($tokoDisplayed as $index => $tokoName)
+                {{-- @foreach ($tokoDisplayed as $index => $tokoName)
                 @foreach ($ongkirsDetails[$index] as $ongkir)
-                        <tr>
-                            <td>
+                        <tr> --}}
+                            {{-- <td>
                                 <p>{{ $tokoName }}</p>
                             </td>
                             @if ($tokoName == 'Toko A')
@@ -242,10 +381,10 @@
                         <p>Total Ongkir</p>
                     </td>
                     <td>
-                        <form action="/checked-total-ongkir" method="POST">
-                            @csrf
+                        <form action="/checked-total-ongkir" method="POST"> --}}
+                            {{-- @csrf --}}
                             {{-- genrate get total harga ongkir toko A dan B menambahkannya --}}
-                            <input type="text" name="total_ongkir" id="total_ongkir" class="form-control"
+                            {{-- <input type="text" name="total_ongkir" id="total_ongkir" class="form-control"
                                 value="{{ $totalOngkir }}" readonly>
                             <button type="submit">Checked</button>
                         </form>
@@ -257,9 +396,9 @@
                     </td>
                     <td>
                         <form action="/checked-total-keseluruhan" method="POST">
-                            @csrf
+                            @csrf --}}
                             {{-- genrate get total harga ongkir toko A dan B menambahkannya --}}
-                            <input type="text" name="total_keseluruhan" id="total_keseluruhan" class="form-control"
+                            {{-- <input type="text" name="total_keseluruhan" id="total_keseluruhan" class="form-control"
                                 value="{{ $totalOngkir + $totalBayar }}" readonly>
                             <button type="submit">Checked</button>
                         </form>
@@ -270,7 +409,7 @@
             </tbody>
         </table>
         <button class="btn btn-primary" id="pay-button">Bayar Sekarang</button>
-    </div>
+    </div> --}}
 
     @if (session('snapToken'))
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
