@@ -186,21 +186,19 @@
 
                 @php
                     $totalOngkir = 0;
-                    $tokoDisplayed = [];
-                    $totalBayar = 0;
                 @endphp
 
                 @foreach ($tokoDisplayed as $index => $tokoName)
                     @foreach ($ongkirsDetails[$index] as $ongkir)
                         @php
-                            $totalOngkir += $ongkir['costs'][0]['cost'][0]['value'];
+                            $totalOngkir += $ongkir['results'][0]['costs'][0]['cost'][0]['value'];
                         @endphp
                     @endforeach
                 @endforeach
 
-                {{-- for each $tokoDisplayed --}}
+                    {{-- for each $tokoDisplayed --}}
                 @foreach ($tokoDisplayed as $index => $tokoName)
-                    @foreach ($ongkirsDetails[$index] as $ongkir)
+                @foreach ($ongkirsDetails[$index] as $ongkir)
                         <tr>
                             <td>
                                 <p>{{ $tokoName }}</p>
@@ -221,19 +219,19 @@
                             </td>
                             <td>
                                 <input type="text" name="kurir" id="kurir" class="form-control"
-                                    value="{{ $ongkir['code'] }}" readonly>
+                                    value="{{ $ongkir['results'][0]['name'] }}" readonly>
                             </td>
                             <td>
                                 <input type="text" name="service" id="service" class="form-control"
-                                    value="{{ $ongkir['costs'][0]['service'] }}" readonly>
+                                    value="{{ $ongkir['results'][0]['costs'][0]['service'] }}" readonly>
                             </td>
                             <td>
                                 <input type="text" name="estimasi" id="estimasi" class="form-control"
-                                    value="{{ $ongkir['costs'][0]['cost'][0]['etd'] }}" readonly>
+                                    value="{{ $ongkir['results'][0]['costs'][0]['cost'][0]['etd'] }}" readonly>
                             </td>
                             <td>
                                 <input type="text" name="ongkir" id="ongkir" class="form-control"
-                                    value="{{ $ongkir['costs'][0]['cost'][0]['value'] }}" readonly>
+                                    value="{{ $ongkir['results'][0]['costs'][0]['cost'][0]['value'] }}" readonly>
                             </td>
                         </tr>
                     @endforeach
