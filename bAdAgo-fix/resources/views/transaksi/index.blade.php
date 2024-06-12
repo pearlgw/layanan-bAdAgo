@@ -79,7 +79,6 @@
 
                 @php
                     $totalOngkir = 0;
-                    $totalBayar = 0;
                 @endphp
 
                 @foreach ($tokoDisplayed as $index => $tokoName)
