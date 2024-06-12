@@ -8,7 +8,8 @@
                 <button type="submit" class="btn btn-primary">Logout</button>
             </form> --}}
 
-            {{-- <a href="/keranjang">Lihat Keranjang</a> --}}
+            <a href="/keranjang">Lihat Keranjang</a>
+            <a href="/checkout">Lihat Checkout</a>
         @endif
 
 

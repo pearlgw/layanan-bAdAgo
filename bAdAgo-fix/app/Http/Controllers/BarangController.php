@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\City;
 use App\Models\Keranjang;
-use App\Models\User;
+use App\Models\Province;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -89,7 +90,17 @@ class BarangController extends Controller
             fetchBarangDetails($client, $url, $barangDetails, 'Toko B');
         }
 
-        // Mengembalikan tampilan dengan data barang yang diambil dari kedua API
+        
+        // get kota from barangDetails
+        foreach ($barangDetails as $barang => $value) {
+            $kota_asal_id = City::where('name', $value['kota'])->first()->city_id;
+            $provinsi_asal_id = Province::where('name', $value['provinsi'])->first()->province_id;
+
+            // add kota asal to barang details
+            $barangDetails[$barang]['kota_asal'] = $kota_asal_id;
+            $barangDetails[$barang]['provinsi_asal'] = $provinsi_asal_id;
+        }
+
         return view('barang.keranjang', compact('barangDetails'));
     }
 

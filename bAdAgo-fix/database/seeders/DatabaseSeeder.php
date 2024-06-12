@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -31,14 +32,19 @@ class DatabaseSeeder extends Seeder
             'name' => 'gayuh',
             'email' => 'gayuh@gmail.com',
             'password' => Hash::make('password'),
-            'role_id' => 1
+            'no_telp' => '089738383939',
+            'provinsi' => 'Jawa Tengah',
+            'kota' => 'Semarang'
         ]);
         User::create([
             'name' => 'adit',
             'email' => 'adit@gmail.com',
             'password' => Hash::make('password'),
-            'role_id' => 1
+            'no_telp' => '089738383939',
+            'provinsi' => 'Jawa Barat',
+            'kota' => 'Bandung'
         ]);
-    }
 
+        $this->call(LocationsSeeder::class);
+    }
 }
