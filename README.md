@@ -1,0 +1,2 @@
+cara menggunakannya:
+1. 
