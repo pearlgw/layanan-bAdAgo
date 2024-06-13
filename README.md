@@ -16,3 +16,4 @@ cara menggunakannya:
    - lakukan "php artisan migrate" dan kemudian lakukan "php artisan db:seed"
    - untuk di toko-a cara menjalankannya "php artisan serve --port=8001"
    - untuk di toko-b cara menjalankannya "php artisan serve --port=8002"
+   - untuk di bAdAgo-fix cara menjalankannya "php artisan serve"
