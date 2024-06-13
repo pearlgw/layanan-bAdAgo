@@ -14,3 +14,5 @@ cara menggunakannya:
 
    - kemudian lakukan perintah "php artisan key:generate"
    - lakukan "php artisan migrate" dan kemudian lakukan "php artisan db:seed"
+   - untuk di toko-a cara menjalankannya "php artisan serve --port=8001"
+   - untuk di toko-b cara menjalankannya "php artisan serve --port=8002"
