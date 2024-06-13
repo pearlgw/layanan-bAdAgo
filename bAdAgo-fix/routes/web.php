@@ -44,6 +44,8 @@ Route::group(['middleware' => ['auth', 'checkrole:1']], function () {
     Route::post('/checked-total-ongkir', [TransaksiController::class, 'checkedTotalOngkir']);
     Route::put('/update-status-paid/{transaksiId}', [TransaksiController::class, 'updateStatusPaid']);
 
+    // Route::get('/history-transaksi', [TransaksiController::class, 'historyTransaksi']);
+
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/redirect', [RedirectController::class, 'cek']);
 });
