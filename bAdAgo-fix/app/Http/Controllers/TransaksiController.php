@@ -144,7 +144,7 @@ class TransaksiController extends Controller
         {
             // dd($total_weight);
             $client = new Client();
-            $apiKey = 'd2beef391763b72ff52f5b413ac0e744';
+            $apiKey = 'b3e7bb7d144d2361bf3ad1348ed8cc4a';
 
             $response = $client->post('https://api.rajaongkir.com/starter/cost', [
                 'headers' => [

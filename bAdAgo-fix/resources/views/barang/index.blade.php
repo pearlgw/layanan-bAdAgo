@@ -19,7 +19,7 @@
 
             <div class="w-full max-w-xs bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 m-4">
                 <a href="#">
-                    <img class="py-4 px-2 rounded-t-lg" src="https://images.unsplash.com/photo-1593642532973-d31b6557fa68?ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80" alt="product image" />
+                    <img class="py-4 px-2 rounded-t-lg" src="https://plus.unsplash.com/premium_photo-1675799551089-d264f8f2900b?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="product image" />
                 </a>
 
                 <div class="px-2 pb-4">
