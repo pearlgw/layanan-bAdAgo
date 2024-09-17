@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
                 'provinsi' => $provinsi,
                 'stok' => mt_rand(10, 20),
                 'weight' => mt_rand(100, 10000),
-                'harga_jual' => mt_rand(2000, 2000000),
+                'harga_jual' => mt_rand(2000, 200000),
             ]);
         }
     }

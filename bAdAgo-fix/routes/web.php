@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\CheckOngkirController;
+use App\Http\Controllers\DetailTransaksiController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\UserController;
@@ -46,4 +48,6 @@ Route::group(['middleware' => ['auth', 'checkrole:1']], function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/redirect', [RedirectController::class, 'cek']);
+
+    Route::resource('/history', HistoryController::class);
 });
